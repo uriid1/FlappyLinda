@@ -1,2 +1,2 @@
 #!/bin/bash
-zip -r game.love .
+zip -r FlappyLinda.love .
