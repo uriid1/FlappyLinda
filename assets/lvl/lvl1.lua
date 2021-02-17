@@ -51,11 +51,7 @@ levels[1] = function()
 		global.night = false
 		global.score_board = false
 
-		-- Parse resolution  2400x1080
-		global.win_w = love.graphics.getWidth()
-		global.win_h = love.graphics.getHeight()
-		global.win_xoffset = global.win_w*.5
-		global.win_yoffset = global.win_h*.5
+		-- Parse resolution
 		success = love.window.setMode(global.win_w, global.win_h)
 
 		if (3 * ratio)%2 == 0 then
@@ -429,7 +425,7 @@ levels[1] = function()
 				to_score = 0
 				to_score_spd = 0
 				slice_speed = 0
-				logo_y = lerp(logo_y, logo_h, 0.1)
+				logo_y = lerp(logo_y, logo_h + (logo_h/4), 0.1)
 			else
 				if (global.over == false) then
 					logo_y = lerp(logo_y, -logo_h, 0.1)
