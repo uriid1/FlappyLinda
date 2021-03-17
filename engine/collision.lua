@@ -57,7 +57,8 @@ end
 --- Points
 -- Collision BOX <-> POINT
 function point_in_box(px, py, box)
-	return ((math.abs(px - box.x) < box.w) and (math.abs(py - box.y) < box.h))
+	return math.abs(px - box.x) < box.w and
+		   math.abs(py - box.y) < box.h
 end
 
 -- Collision POINT <-> CIRCLE

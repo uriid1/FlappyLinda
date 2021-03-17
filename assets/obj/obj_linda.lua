@@ -1,7 +1,5 @@
 -- гг
 obj_linda = object:new(sprite.linda, 0, 0, 0, 0)
---obj_linda.xscale = ratio
---obj_linda.yscale = ratio
 
 function obj_linda:create()
 	self.image_angle = 0

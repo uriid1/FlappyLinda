@@ -1,11 +1,12 @@
 --- Lvl 1
 levels[1] = function()
-
+	
+	-- Set local func
 	local set_bg_color = love.graphics.setBackgroundColor
 	local draw_text = love.graphics.print
 	local set_font = love.graphics.setFont
 	local set_color = love.graphics.setColor
-	local draw = love.graphics.draw
+	local draw_sprite = love.graphics.draw
 	local ceil = math.ceil
 	local floor = math.floor
 	local random = math.random
@@ -19,6 +20,7 @@ levels[1] = function()
     	love.filesystem.write("love.me", serialized)
 	end
 
+	-- Restart room
 	function room_restart()
 		obj_linda:create()
 		global.score = 0
@@ -92,13 +94,13 @@ levels[1] = function()
 				tile_ground.speed = ceil(global.world_speed*.5)
 
 				function tile_ground:draw()
-					if global.over == false then
+					if (global.over == false) then
 						self.x = self.x - self.speed
 					end
-					if self.x < -ground_w then
+					if (self.x < -ground_w) then
 						self.x = global.win_w
 					end
-					draw(sprite.ground, self.x, self.y, 0, ratio, ratio)
+					draw_sprite(sprite.ground, self.x, self.y, 0, ratio, ratio)
 				end
 				table.insert(grounds, tile_ground)
 			end
@@ -120,15 +122,15 @@ levels[1] = function()
 				tile_veg.xscale = 1
 
 				function tile_veg:draw()
-					if global.over == false then
+					if (global.over == false) then
 						self.x = self.x - self.speed
 					end
-					if self.x < -veg_w then
+					if (self.x < -veg_w) then
 						self.x = global.win_w + veg_w
 						self.frame = random(1, 13)
 						tile_veg.xscale = random(-1, 1) > 0 and 1 or -1
 					end
-					draw(sprite.veg, spr_cut.frames[self.frame], self.x, self.y, 0, self.xscale, 1, spr_cut.frame_xoffset, spr_cut.frame_yoffset)
+					draw_sprite(sprite.veg, spr_cut.frames[self.frame], self.x, self.y, 0, self.xscale, 1, spr_cut.frame_xoffset, spr_cut.frame_yoffset)
 				end
 				table.insert(vegs, tile_veg)
 			end
@@ -149,16 +151,16 @@ levels[1] = function()
 
 					function tile_stars:draw()
 						--
-						if global.over == false then
+						if (global.over == false) then
 							self.x = self.x - self.speed
 						end
 						--
-						if self.x < -stars_w then
+						if (self.x < -stars_w) then
 							self.x = global.win_w + 50
 						end
 						--
 						set_color(rgba(255,255,255,stars_alpha))
-						draw(sprite.stars, spr_cut.frames[i], self.x, self.y)
+						draw_sprite(sprite.stars, spr_cut.frames[i], self.x, self.y)
 						set_color(1,1,1,1)
 					end
 					table.insert(stars, tile_stars)
@@ -322,7 +324,7 @@ levels[1] = function()
 
 			-- Moon
 			set_color(rgba(255,255,255,stars_alpha_control))
-			draw(sprite.moon, moon_x, moon_y, 0, ratio, ratio)
+			draw_sprite(sprite.moon, moon_x, moon_y, 0, ratio, ratio)
 			set_color(1, 1, 1, 1)
 
 		end
@@ -342,7 +344,7 @@ levels[1] = function()
 		end
 
 		do -- Obj
-			-- FF
+			-- FF (Fox Fun)
 			obj_ff:draw_strip()
 			obj_ff:cool_quotes()
 
@@ -360,7 +362,7 @@ levels[1] = function()
 		do -- GUI
 			set_font(font.large)
 			if global.score_board == false then
-				-- Start
+				-- Text Start
 				if (global.start == false) then
 					text_start_rotate = sin/10
 					text_start_size = lerp(text_start_size, ratio, 0.1)
@@ -372,10 +374,14 @@ levels[1] = function()
 					text_start_alpha_shadow = lerp(text_start_alpha_shadow, 0, 0.1)
 					text_start_alpha = lerp(text_start_alpha, 0, 0.1)
 				end
-				set_color(rgba(0,0,0,text_start_alpha_shadow))
-				draw_text(text_start, global.win_xoffset+5, global.win_yoffset + 235, text_start_rotate, text_start_size, text_start_size, text_start_w*.5, text_start_h*.5)				
-				set_color(rgba(255,255,255,text_start_alpha))
-				draw_text(text_start, global.win_xoffset, global.win_yoffset + 230, text_start_rotate/2, text_start_size, text_start_size, text_start_w*.5, text_start_h*.5)
+
+				-- Draw text start
+				if (text_start_size > 0.1) then
+					set_color(rgba(0,0,0,text_start_alpha_shadow))
+					draw_text(text_start, global.win_xoffset+5, global.win_yoffset + 235, text_start_rotate, text_start_size, text_start_size, text_start_w*.5, text_start_h*.5)				
+					set_color(rgba(255,255,255,text_start_alpha))
+					draw_text(text_start, global.win_xoffset, global.win_yoffset + 230, text_start_rotate/2, text_start_size, text_start_size, text_start_w*.5, text_start_h*.5)
+				end
 			end
 
 			if (global.over == true) and (global.start == false) then
@@ -431,21 +437,28 @@ levels[1] = function()
 					logo_y = lerp(logo_y, -logo_h, 0.1)
 				end
 			end
-			draw(sprite.logo, global.win_xoffset - (sprite.logo:getWidth()*.5)*logo_ratio, logo_y, 0, logo_ratio, logo_ratio)
+			-- draw logo
+			if (logo_y > -logo_h/2) then
+				draw_sprite(sprite.logo, global.win_xoffset - (sprite.logo:getWidth()*.5)*logo_ratio, logo_y, 0, logo_ratio, logo_ratio)
+			end
 
-			-- Score
+			-- Text Score
 			if (global.menu == false) and (global.over == false) then
 				score_y = lerp(score_y, 10+score_h, 0.1)
 			end
-			set_font(font.score)
-			score_w = font.large:getWidth( global.score ) * .5
-			score_h = font.large:getHeight( global.score ) * .5
-			set_color(rgba(0,0,0,25))
-			draw_text(global.score, global.win_xoffset + 5, score_y + 5, -sin*.1, fnt_size, fnt_size, score_w, score_h)
-			
-			set_color(rgba(255,255,255,100))
-			draw_text(global.score, global.win_xoffset, score_y, sin*.1, fnt_size, fnt_size, score_w, score_h)
 
+			-- draw text score
+			if (score_y > 0) then
+				set_font(font.score)
+				score_w = font.large:getWidth( global.score ) * .5
+				score_h = font.large:getHeight( global.score ) * .5
+				set_color(rgba(0,0,0,25))
+				draw_text(global.score, global.win_xoffset + 5, score_y + 5, -sin*.1, fnt_size, fnt_size, score_w, score_h)
+				
+				set_color(rgba(255,255,255,100))
+				draw_text(global.score, global.win_xoffset, score_y, sin*.1, fnt_size, fnt_size, score_w, score_h)
+			end
+	
 			-- debug monitor
 			if (global.debug == true) then
 				set_font(font.small)
@@ -469,8 +482,6 @@ levels[1] = function()
 
 	end
 
-	function level_unload()
-
-	end
+	--function level_unload() end
 
 end

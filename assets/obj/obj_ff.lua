@@ -15,10 +15,11 @@ local timer = true
 local delay = 0.083
 local alarm = 0
 local timing = math.random(100)
+local ceil = math.ceil
 function obj_ff:step()
 	if global.menu == false and self.x < global.win_w + 24 then
 		animation_loop(self)
-		self.x = self.x - math.ceil(global.world_speed*.5) - 2*ratio
+		self.x = self.x - ceil(global.world_speed*.5) - 2*ratio
 		if (self.x < -(84*ratio)) then
 			self.x = global.win_w + (48 * ratio)
 		end -- if outside lvl
@@ -37,7 +38,7 @@ function obj_ff:step()
 
 		if (go == true) then
 			math.randomseed(os.time())
-			self.x = self.x - math.ceil(global.world_speed*.5) - 1*ratio
+			self.x = self.x - ceil(global.world_speed*.5) - 1*ratio
 			if (self.x < -(84*ratio)) then
 				self.x = global.win_w + 48
 
