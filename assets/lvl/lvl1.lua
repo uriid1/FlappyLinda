@@ -46,7 +46,7 @@ levels[1] = function()
 		-- Globals
 		global.fps = 60
 		global.debug = false
-		global.world_speed = 3 * ratio
+		global.world_speed = 3
 		global.start = false
 		global.over = false
 		global.menu = true
