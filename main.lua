@@ -1,6 +1,7 @@
 -- Levels
-levels = {}
-level = 0
+levels = {};
+level = 0;
+dt = 1 / 60;
 
 -- Load error screen
 require "engine/errorscr"
@@ -13,6 +14,7 @@ if love.system.getOS() == "Android" or love.system.getOS() == "Ios" then
 	global.device = "phone"
 end
 
+--
 if love.system.getOS() == "OS X" or love.system.getOS() == "Windows" or love.system.getOS() == "Linux" then
 	imageData = love.image.newImageData( "icon.png" ) 
 	success = love.window.setIcon(imageData)
@@ -30,17 +32,12 @@ require "engine/class"
 require "engine/easing"
 
 -- load libs
-lume = require "libs/lume"
+lume  = require "libs/lume"
 audio = require "libs/wave"
---require "libs/simpleScale"
-
--- load res
---require "resource"
 
 -- Load lvl
 require "assets/lvl/lvl0"
 require "assets/lvl/lvl1"
-
 
 -- exec lvl
 levels[level]()

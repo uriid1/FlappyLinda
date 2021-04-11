@@ -1,6 +1,6 @@
 --- Lvl 1
 levels[1] = function()
-	
+	local audio = require "libs/wave"
 	-- Set local func
 	local set_bg_color = love.graphics.setBackgroundColor
 	local draw_text = love.graphics.print
@@ -17,7 +17,7 @@ levels[1] = function()
 		data.best_score = global.best_score
 
 		serialized = lume.serialize(data)
-    	love.filesystem.write("love.me", serialized)
+		love.filesystem.write("love.me", serialized)
 	end
 
 	-- Restart room
@@ -36,7 +36,7 @@ levels[1] = function()
 	end
 	
 	function level_load()
-		
+
 		-- Effects
 		sin_value, sin = 0, 0
 		fnt_size = 1
@@ -56,10 +56,6 @@ levels[1] = function()
 		-- Parse resolution
 		success = love.window.setMode(global.win_w, global.win_h)
 
-		if (3 * ratio)%2 == 0 then
-			global.world_speed = global.world_speed + 1
-		end
-
 		-- Tables
 		obj = {}
 		walls = {}
@@ -78,34 +74,11 @@ levels[1] = function()
 		pt_star = require "assets/obj/obj_particle"
 
 		-- Music
-		music.game:setVolume(.1)
-  		music.game:play()
-  		music.game:setLooping(true)
+		--music.game:setVolume(.1)
+  		--music.game:play()
+  		--music.game:setLooping(true)
 
-  		local ground_w = sprite.ground:getWidth() * ratio
-		do -- Create floor
-			grounds = {}
-			local tile_x = global.win_w / ground_w
-
-			for x = 0, tile_x + 2 do
-				local tile_ground = {}
-				tile_ground.x = ground_w*x
-				tile_ground.y = global.win_h - ground_w
-				tile_ground.speed = ceil(global.world_speed*.5)
-
-				function tile_ground:draw()
-					if (global.over == false) then
-						self.x = self.x - self.speed
-					end
-					if (self.x < -ground_w) then
-						self.x = global.win_w
-					end
-					draw_sprite(sprite.ground, self.x, self.y, 0, ratio, ratio)
-				end
-				table.insert(grounds, tile_ground)
-			end
-		end -- floor
-
+		-- FIX
 		do -- Create veg
 			vegs = {}
 			local spr_cut =  sheets.veg
@@ -116,8 +89,8 @@ levels[1] = function()
 			for x = 0, tile_x + 5 do
 				local tile_veg = {}
 				tile_veg.x = random(64*ratio, veg_w*x)
-				tile_veg.y = global.win_h - (veg_h + ground_w)
-				tile_veg.speed = ceil(global.world_speed*.5)
+				tile_veg.y = global.win_h - (veg_h + 32*ratio)
+				tile_veg.speed = ceil(global.world_speed * .5)
 				tile_veg.frame = random(1, 13)
 				tile_veg.xscale = 1
 
@@ -135,39 +108,6 @@ levels[1] = function()
 				table.insert(vegs, tile_veg)
 			end
 		end -- veg
-
-		do -- Create stars
-			stars = {}
-			local spr_cut = sheets.stars
-			local stars_w = (sprite.stars:getWidth()*ratio) / spr_cut.image_number
-			
-			for i = 1, 3 do
-				local stars_i = sheets.stars.frames[i]
-				for x = 0, 1 do
-					local tile_stars = {}
-					tile_stars.x = x*(600*ratio)
-					tile_stars.y = 0
-					tile_stars.speed = i * .5
-
-					function tile_stars:draw()
-						--
-						if (global.over == false) then
-							self.x = self.x - self.speed
-						end
-						--
-						if (self.x < -stars_w) then
-							self.x = global.win_w + 50
-						end
-						--
-						set_color(rgba(255,255,255,stars_alpha))
-						draw_sprite(sprite.stars, spr_cut.frames[i], self.x, self.y)
-						set_color(1,1,1,1)
-					end
-					table.insert(stars, tile_stars)
-				end
-			end
-		end -- Stars
-
 	end
 	-- load func
 	level_load()
@@ -191,21 +131,28 @@ levels[1] = function()
 	end
 
 	function love.update(dt)
+		--
+		global.fps = love.timer.getFPS()
+		if global.fps == round(1.0 / love.timer.getDelta()) then
+			dt = 1 / global.fps
+		end
+
+		global.world_speed = 180 * dt
+		global.fps = love.timer.getFPS()
 
 		function love.keypressed(key, scancode, isrepeat)
-		   if key == "space" then
-		      key_or_not_key_press()
-		   end
+			if key == "space" then
+				key_or_not_key_press()
+			end
 
-		   if key == "d" then
-		   	global.debug = not global.debug 
-		   end
-
+			if key == "d" then
+				global.debug = not global.debug 
+			end
 		end
 
 		-- effects
 		sin_value = sin_value + ((math.pi*2) / 60)
-		sin = .5 + math.sin(sin_value) - .5
+		sin = math.sin(sin_value)
 		fnt_size = lerp(fnt_size, ratio, 0.075)
 
 		do -- Movement
@@ -218,7 +165,7 @@ levels[1] = function()
 		
 		-- Objects steps (move, collsion..)
 		for i = 1, #obj, 1 do
-			obj[i]:step()
+			obj[i]:step(dt)
 		end
 
 		for i=#walls, 1, -1 do
@@ -279,10 +226,64 @@ levels[1] = function()
 	local to_score_spd = 0
 
 	local score_y = -100
-	local score_w = font.large:getWidth( global.score ) * .5
-	local score_h = font.large:getHeight( global.score ) * .5
+	local score_w = font.large:getWidth( global.score ) * 0.5
+	local score_h = font.large:getHeight( global.score ) * 0.5
 
-	function love.draw()
+	-- Ground
+	sprite.ground:setWrap('repeat')
+	local bg_ground = love.graphics.newQuad(0, 0, global.win_w, 32, sprite.ground:getDimensions())
+	local bg_ground_spd = ceil(global.world_speed * 0.5)
+	local bg_ground_x = 0
+
+	-- Stars
+	sprite.star1:setWrap('repeat')
+	sprite.star2:setWrap('repeat')
+	sprite.star3:setWrap('repeat')
+	local bg_stars1 = love.graphics.newQuad(0, 0, global.win_w, global.win_h, sprite.star1:getDimensions())
+	local bg_stars2 = love.graphics.newQuad(600, 0, global.win_w, global.win_h, sprite.star1:getDimensions())
+	local bg_stars3 = love.graphics.newQuad(1200, 0, global.win_w, global.win_h, sprite.star1:getDimensions())
+
+	local star_spd1 = 0.5
+	local star_spd2 = 1
+	local star_spd3 = 1.5
+
+	local stars_x1 = 0
+	local stars_x2 = 50
+	local stars_x3 = 100
+
+	function love.draw(dt)
+		-- Проверить ситуёбину со шторкой
+		if global.device == "phone" then
+			love.window.setFullscreen(not love.window.isMinimized())
+		end
+		
+
+		do -- Stars
+			if (global.over == false) then
+				stars_x1 = stars_x1 + star_spd1
+				stars_x2 = stars_x2 + star_spd2
+				stars_x3 = stars_x3 + star_spd3
+			end
+
+			bg_stars1:setViewport( stars_x1, 0, global.win_w, global.win_h, sprite.star1:getDimensions())
+			bg_stars2:setViewport( stars_x2, 0, global.win_w, global.win_h, sprite.star2:getDimensions())
+			bg_stars3:setViewport( stars_x3, 0, global.win_w, global.win_h, sprite.star3:getDimensions())
+
+			set_color(rgba(255,255,255,stars_alpha))
+			love.graphics.draw(sprite.star1, bg_stars1)
+			love.graphics.draw(sprite.star2, bg_stars2)
+			love.graphics.draw(sprite.star3, bg_stars3)
+			set_color(rgba(255,255,255,100))
+		end
+
+		do -- Ground
+			if (global.over == false) then
+				bg_ground_x = bg_ground_x + bg_ground_spd
+			end
+
+			bg_ground:setViewport( bg_ground_x, 0, global.win_w, 32*ratio, sprite.ground:getDimensions())
+			love.graphics.draw(sprite.ground, bg_ground, 0, global.win_h - 32*ratio, 0, ratio, ratio)
+		end
 
 		do -- Tiles
 			-- Stars
@@ -304,16 +305,6 @@ levels[1] = function()
 			else
 				moon_x = lerp(moon_x, ((-sprite.moon:getWidth()*.5) + 100)*ratio, 0.02)
 				moon_y = lerp(moon_y, ((-sprite.moon:getHeight()*.5) + 100)*ratio, 0.02)
-			end
-
-			-- Stars BG
-			for i=#stars, 1, -1 do
-				stars[i]:draw()
-			end
-
-			-- Ground
-			for i=#grounds, 1, -1 do
-				grounds[i]:draw()
 			end
 
 			-- Vegs
@@ -402,7 +393,7 @@ levels[1] = function()
 				local y2 = y1 + h
 
 				logo_y = lerp(logo_y, y1 - h, 0.1)
-				score_y = lerp(score_y, -(score_h*2), 0.15)
+				score_y = -(score_h*2)--lerp(score_y, -(score_h*2), 0.15)
 
 				draw_sclice(sprite.slice, sheets.slice, x1 - w/2, y1 - h/2, x2 - w/2, y2 - h/2, ratio)
 				set_font(font.large)
@@ -444,7 +435,7 @@ levels[1] = function()
 
 			-- Text Score
 			if (global.menu == false) and (global.over == false) then
-				score_y = lerp(score_y, 10+score_h, 0.1)
+				score_y = score_h + 10--lerp(score_y, 10+score_h, 0.1)
 			end
 
 			-- draw text score
@@ -481,7 +472,5 @@ levels[1] = function()
 		end
 
 	end
-
-	--function level_unload() end
 
 end

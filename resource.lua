@@ -1,17 +1,4 @@
 ---------------- RESOURSE ----------------
--- instance count
-instances = 0
-
--- Game Global par
---[[
-if global.device == "pc" then
-	global.win_w = love.graphics.getWidth()
-	global.win_h = love.graphics.getHeight()
-	global.win_xoffset = global.win_w*.5
-	global.win_yoffset = global.win_h*.5
-end
-]]
-
 global.score = 0
 global.best_score = 0
 
@@ -24,7 +11,7 @@ end
 
 -- Music
 music = {}
-music.game = audio:newSource("assets/snd/snd_X_Ray_Vision_-_Slynk.ogg", "static")
+--music.game = audio:newSource("assets/snd/snd_X_Ray_Vision_-_Slynk.ogg", "static")
 
 -- Sounds
 sound = {}
@@ -57,7 +44,9 @@ sprite.coin_mask  = love.graphics.newImage("assets/spr/spr_mask_coin.png")
 -- Tiles
 sprite.ground = love.graphics.newImage("assets/spr/spr_ground.png")
 sprite.veg    = love.graphics.newImage("assets/spr/spr_vegetation.png")
-sprite.stars  = love.graphics.newImage("assets/spr/spr_stars.png")
+sprite.star1  = love.graphics.newImage("assets/spr/spr_star1.png")
+sprite.star2  = love.graphics.newImage("assets/spr/spr_star2.png")
+sprite.star3  = love.graphics.newImage("assets/spr/spr_star3.png")
 
 -- Quad, Sprite sheets
 sheets = {}
@@ -65,7 +54,6 @@ sheets.linda 	  = cut_sheet(sprite.linda, 54, 48, 4)
 sheets.linda_over = cut_sheet(sprite.linda_over, 54, 48, 1)
 sheets.coin 	  = cut_sheet(sprite.coin, 14, 14, 5)
 sheets.veg 		  = cut_sheet(sprite.veg, 128, 128, 13)
-sheets.stars 	  = cut_sheet(sprite.stars, 600, 1080, 3)
 sheets.ff 		  = cut_sheet(sprite.ff, 30, 32, 4)
 sheets.db 		  = cut_sheet(sprite.db, 64, 68, 10)
 sheets.wadd       = cut_sheet(sprite.wadd, 32, 32, 3)

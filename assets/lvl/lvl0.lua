@@ -10,6 +10,12 @@ levels[0] = function()
 	local i = 0
 	local debug_lvl = false
 	function love.update()
+		--
+		global.fps = love.timer.getFPS()
+		if global.fps == round(1.0 / love.timer.getDelta()) then
+			dt = 1 / global.fps
+		end
+
 		i = i + 1
 		if i >= 10 then debug_lvl = true end 
 

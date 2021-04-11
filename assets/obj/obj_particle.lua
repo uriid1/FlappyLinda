@@ -1,7 +1,6 @@
 --- Particle
 particls = {}
 function pt_create_star(_img, _x, _y, _spd, _count)
-		instances = instances + _count
 		local random = math.random
 		local cos = math.cos
 		local sin = math.sin
@@ -26,7 +25,7 @@ function pt_create_star(_img, _x, _y, _spd, _count)
 			local move_x = 0
 			--
 
-		    function part:draw()
+			function part:draw()
 
 		    	alpha = alpha - .035
 
@@ -45,7 +44,7 @@ function pt_create_star(_img, _x, _y, _spd, _count)
 					self.destroy = true
 					self_destroy(particls)
 				end
-		    end -- draw
-		    table.insert(particls, part)
+			end -- draw
+			table.insert(particls, part)
 		end -- for
 end -- func

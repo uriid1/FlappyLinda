@@ -135,9 +135,8 @@ function create_wall()
 		for y = 0, 5 do
 			local coin = object:new(sprite.coin, 0, 0, 0, 0)
 			coin.sprite_sheet = sheets.coin
-			coin.image_speed = 9/global.fps
+			coin.image_speed = (9/global.fps)
 			coin.image_index = y%sheets.coin.image_number == 0 and 1 or y
-			coin.speed = global.world_speed
 			coin.direction = 180
 
 			coin.x = wall_up.x - 3*ratio
@@ -151,6 +150,7 @@ function create_wall()
 
 				-- Collision
 				if (global.over == false) then
+					self.speed = global.world_speed
 					if collision_box_mask(self, obj_linda, mask.coin, mask.linda) then
 						sound.money:play()
 						self.destroy = true
@@ -162,6 +162,8 @@ function create_wall()
 						pt_create_star(sprite.star_particle, self.x, self.y, 1, 5)
 						self_destroy(coins)
 					end
+				else
+					self.speed = 0
 				end
 
 				-- Outside room
@@ -178,12 +180,7 @@ function create_wall()
 end
 
 wall_control = {}
-local delay = 0
-if ratio > 1.5 then
-	delay = (0.083 / (ratio*.5) )
-else
-	delay = 0.083
-end
+local delay = 0.08
 
 local alarm = 0
 function wall_control:step()
@@ -191,7 +188,7 @@ function wall_control:step()
 	if global.start == true and global.over == false then
 		alarm = alarm + delay
 
-		if (alarm >= 9) then
+		if (alarm >= 10) then
 			create_wall()
 			alarm = 0
 		end

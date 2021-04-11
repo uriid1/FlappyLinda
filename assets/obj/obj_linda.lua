@@ -26,9 +26,10 @@ function flay()
 	end
 end
 
-local grav = .35 + (ratio/10)
-function obj_linda:step()
-		animation_loop(self)
+
+function obj_linda:step(dt)
+	local grav = 25*dt
+	animation_loop(self)
 
 	if (global.start == true) then
 		function love.mousepressed(x, y, button, istouch)

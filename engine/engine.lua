@@ -1,87 +1,15 @@
--- Константы
+-- Const
 math.randomseed(os.time())
 _D2R = math.pi / -180
 _R2D = -180 / math.pi
 
--- Математические функции
-function sign(x)
-	return (x > 0) and 1 or (x == 0 and 0 or -1)
-end
+-- Math
+function round(x)return (x >= 0) and math.floor(x + .5) or math.ceil(x - .5) end
+function clamp(val, min, max) return math.max(min, math.min(max, val))end
+function lerp(v0, v1, t) return (1 - t) * v0 + t * v1  end
 
-function round(x)
-	return (x >= 0) and math.floor(x + .5) or math.ceil(x - .5)
-end
-
-function clamp(val, min, max)
-	return math.max(min, math.min(max, val))
-end
-
-function range(val, min, max) 
-	return val == math.max(min, math.min(max, val))
-end
-
-function lerp(v0, v1, t)
-	return (1 - t) * v0 + t * v1 
-end
-
--- Тригонометрические функции
-function lengthdir_x(length, direction)
-	return length * math.cos(direction * _D2R)
-end
-
-function lengthdir_y(length, direction)
-	return length * math.sin(direction * _D2R)
-end
-
-function point_direction(x1, y1, x2, y2)
-	return (_R2D * (math.atan2(y1 - y2, x1 - x2))) + 180
-end
-
-function angle_difference(ang1, ang2)
-	return ((((ang1 - ang2) % 360) + 540) % 360) - 180
-end
-
-function distance_to_point(x1, y1, x2, y2) 
-	return math.sqrt( (x1 - x2)^2 + (y1 - y2)^2 )
-end
-
-function degtorad(degree)
-	return degree * _D2R
-end
-
-function radtodeg(degree)
-	return degree * _R2D
-end
-
--- Полет объекта к точке
-function move_towards_point(obj, to_x, to_y, spd)
-    local dx = to_x - obj.x
-    local dy = to_y - obj.y
-    local dist = dx * dx + dy * dy;
-
-    if (dist < spd * spd) then
-        obj.x = to_x
-        obj.y = to_y
-    else
-        dist = math.sqrt(dist)
-        obj.x = obj.x + dx * spd / dist
-        obj.y = obj.y + dy * spd / dist
-    end
-end
-
--- GamePlay Функции
--- Удаление объекта
-function instance_destroy(_obj, i)
-	table.remove(_obj, i)
-	instances = instances - 1
-	--table.remove(instances, i)
-end
-
--- функция в вощращает реальное напрвление(BETA)
-function real_direction(_dir)
-	local temp = _dir
-	return (_dir > 0) and _dir or (-360 - temp) * -1
-end
+-- GamePlay
+function instance_destroy(_obj, i)table.remove(_obj, i) end
 
 --------------- Анимации
 -- Цикличная
@@ -90,16 +18,6 @@ function animation_loop(_obj)
 
 	if (_obj.image_index >= _obj.sprite_sheet.image_number + 1) then
 		_obj.image_index = 1
-	end
-end
-
--- До последнего кадра
-function animation_to_end(_obj)
-	if _obj.image_index < (_obj.sprite_sheet.image_number + 1) - _obj.image_speed then
-		_obj.image_index = _obj.image_index + _obj.image_speed
-		_obj.animation_end = false
-	else
-		_obj.animation_end = true
 	end
 end
 

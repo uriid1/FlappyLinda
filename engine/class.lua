@@ -5,8 +5,6 @@ function object:new(_spr, _x, _y, _dir, _spd)
 	
 	-- init
 	local obj = setmetatable({}, self);
-	instances = instances + 1
-	obj.index = instances
 
 	-- Свойства взаимодействия
 	obj.x = _x
